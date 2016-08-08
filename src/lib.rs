@@ -1,11 +1,20 @@
-use std::cmp::{Eq, Ord};
+#[macro_use] mod try_opt;
 
-pub trait AscendingIterator: Iterator
-    where <Self as Iterator>::Item: Eq + Ord
-{
-}
+mod intersection;
+mod difference;
+mod distinct;
 
-pub trait DescendingIterator: Iterator
-    where <Self as Iterator>::Item: Eq + Ord
-{
-}
+pub use intersection::{
+    AscendingIntersection,
+    DescendingIntersection,
+};
+
+pub use difference::{
+    AscendingDifference,
+    DescendingDifference,
+};
+
+pub use distinct::{
+    AscendingDistinct,
+    DescendingDistinct,
+};
