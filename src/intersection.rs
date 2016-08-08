@@ -94,6 +94,7 @@ impl<T, T1, T2> Iterator for DescendingIntersection<T, T1, T2>
 
 #[cfg(test)]
 mod tests {
+    use test::{self, Bencher};
     use intersection::*;
 
     #[test]
@@ -116,5 +117,33 @@ mod tests {
             .collect();
 
         assert_eq!([4, 2], c.as_ref());
+    }
+
+    #[bench]
+    fn intersect_by_hash_set(bencher: &mut Bencher) {
+        use std::collections::HashSet;
+
+        let a: Vec<_> = (1..1000).collect();
+        let b: Vec<_> = (1..1000).filter(|n| n & 1 == 0).collect();
+
+        bencher.iter(|| {
+            let a: HashSet<_> = a.iter().cloned().collect();
+            let b: HashSet<_> = b.iter().cloned().collect();
+            let c: Vec<_> = a.intersection(&b).cloned().collect();
+
+            test::black_box(c)
+        });
+    }
+
+    #[bench]
+    fn intersect_by_ascending(bencher: &mut Bencher) {
+        let a: Vec<_> = (1..1000).collect();
+        let b: Vec<_> = (1..1000).filter(|n| n & 1 == 0).collect();
+        
+        bencher.iter(|| {
+            let result: Vec<_> = AscendingIntersection::new(a.iter(), b.iter()).map(|(&a, _)| a).collect();
+
+            test::black_box(result);
+        })
     }
 }
